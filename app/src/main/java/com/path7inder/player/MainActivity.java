@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(
                 getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "READ_EXTERNAL_STORAGE PERMISSION_GRANTED!");
+            loadVideos();
         } else if (shouldShowRequestPermissionRationale(
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Log.d(TAG, "User has denied READ_EXTERNAL_STORAGE explicitly!");
@@ -44,16 +44,37 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "PERMISSION_GRANTED!");
-                ContentResolver contentResolver = getBaseContext().getContentResolver();
-                Cursor cursor = contentResolver.query(
-                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                        null,
-                        null,
-                        null,
-                        null);
-                Log.d(TAG, "rows : " + cursor.getCount());
-                Log.d(TAG, "columns : " + cursor.getColumnCount());
+                loadVideos();
             }
+        }
+    }
+
+    private void loadVideos() {
+        Log.d(TAG, "loadVideos");
+        ContentResolver contentResolver = getBaseContext().getContentResolver();
+        Cursor cursor = contentResolver.query(
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+        Log.d(TAG, "row : " + cursor.getCount());
+        Log.d(TAG, "col : " + cursor.getColumnCount());
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getColumnCount(); i++) {
+            String name = cursor.getColumnName(i);
+            int type = cursor.getType(i);
+            String value = "null";
+            if (type == Cursor.FIELD_TYPE_STRING) {
+                value = "(String) " + cursor.getString(i);
+            } else if (type == Cursor.FIELD_TYPE_INTEGER) {
+                value = "(Integer) " + String.valueOf(cursor.getInt(i));
+            } else if (type == Cursor.FIELD_TYPE_FLOAT) {
+                value = "(Float) " + String.valueOf(cursor.getFloat(i));
+            } else if (type == Cursor.FIELD_TYPE_BLOB) {
+                value = "(Blob) data";
+            }
+            Log.d(TAG, i + ": " + name + ": " + value);
         }
     }
 }
