@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -17,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
     private final int REQUEST_CODE_PERMISSION = 0;
 
+    ArrayList<String> videos = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(
                 getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
-            loadVideos();
+            videos = loadVideos();
         } else if (shouldShowRequestPermissionRationale(
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Log.d(TAG, "User has denied READ_EXTERNAL_STORAGE explicitly!");
@@ -44,37 +48,25 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "PERMISSION_GRANTED!");
-                loadVideos();
+                videos = loadVideos();
             }
         }
     }
 
-    private void loadVideos() {
-        Log.d(TAG, "loadVideos");
+    private ArrayList<String> loadVideos() {
+        ArrayList<String> videos = new ArrayList<>();
         ContentResolver contentResolver = getBaseContext().getContentResolver();
+        String[] projection = new String[] { MediaStore.Video.Media.DISPLAY_NAME };
         Cursor cursor = contentResolver.query(
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                null,
+                projection,
                 null,
                 null,
                 null);
-        Log.d(TAG, "row : " + cursor.getCount());
-        Log.d(TAG, "col : " + cursor.getColumnCount());
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getColumnCount(); i++) {
-            String name = cursor.getColumnName(i);
-            int type = cursor.getType(i);
-            String value = "null";
-            if (type == Cursor.FIELD_TYPE_STRING) {
-                value = "(String) " + cursor.getString(i);
-            } else if (type == Cursor.FIELD_TYPE_INTEGER) {
-                value = "(Integer) " + String.valueOf(cursor.getInt(i));
-            } else if (type == Cursor.FIELD_TYPE_FLOAT) {
-                value = "(Float) " + String.valueOf(cursor.getFloat(i));
-            } else if (type == Cursor.FIELD_TYPE_BLOB) {
-                value = "(Blob) data";
-            }
-            Log.d(TAG, i + ": " + name + ": " + value);
+        int nameColumn = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME);
+        while (cursor.moveToNext()) {
+            videos.add(cursor.getString(nameColumn));
         }
+        return videos;
     }
 }
