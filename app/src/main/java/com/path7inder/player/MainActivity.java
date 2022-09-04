@@ -21,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
     private final int REQUEST_CODE_PERMISSION = 0;
 
-    private RecyclerView recyclerView;
-    private CustomAdapter customAdapter;
     private ArrayList<String> videos = new ArrayList<>();
 
     @Override
@@ -51,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         for (String video : videos) {
             Log.d(TAG, video);
         }
-        recyclerView = findViewById(R.id.recyclerView);
-        customAdapter = new CustomAdapter(videos);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        CustomAdapter customAdapter = new CustomAdapter(videos);
         recyclerView.setAdapter(customAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
         if (recyclerView.getLayoutManager() != null) {
