@@ -13,13 +13,17 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
     private final int REQUEST_CODE_PERMISSION = 0;
 
-    ArrayList<String> videos = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private CustomAdapter customAdapter;
+    private ArrayList<String> videos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,23 @@ public class MainActivity extends AppCompatActivity {
                     new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
                     REQUEST_CODE_PERMISSION
             );
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        for (String video : videos) {
+            Log.d(TAG, video);
+        }
+        recyclerView = findViewById(R.id.recyclerView);
+        customAdapter = new CustomAdapter(videos);
+        recyclerView.setAdapter(customAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+        if (recyclerView.getLayoutManager() != null) {
+            recyclerView.scrollToPosition(
+                    ((LinearLayoutManager) recyclerView.getLayoutManager())
+                            .findFirstCompletelyVisibleItemPosition());
         }
     }
 
