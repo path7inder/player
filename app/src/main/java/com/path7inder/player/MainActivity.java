@@ -19,8 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_PERMISSION = 0;
 
-    private RecyclerView recyclerView;
-    private ArrayList<String> videos;
+    private final ArrayList<String> videos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        videos = new ArrayList<>();
         CustomAdapter adapter = new CustomAdapter(videos);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
