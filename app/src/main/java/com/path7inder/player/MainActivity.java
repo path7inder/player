@@ -18,23 +18,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String TAG = "MainActivity";
     private final int REQUEST_CODE_PERMISSION = 0;
 
-    private ArrayList<String> videos = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private ArrayList<String> videos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initView();
+
         if (ContextCompat.checkSelfPermission(
                 getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED) {
-            videos = loadVideos();
-        } else if (shouldShowRequestPermissionRationale(
-                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            Log.d(TAG, "User has denied READ_EXTERNAL_STORAGE explicitly!");
+            loadVideos();
         } else {
             requestPermissions(
                     new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
@@ -44,14 +43,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        for (String video : videos) {
-            Log.d(TAG, video);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSION) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                loadVideos();
+            } else {
+                finish();
+            }
         }
+    }
+
+    private void initView() {
+        videos = new ArrayList<>();
+        CustomAdapter adapter = new CustomAdapter(videos);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        CustomAdapter customAdapter = new CustomAdapter(videos);
-        recyclerView.setAdapter(customAdapter);
+        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
         if (recyclerView.getLayoutManager() != null) {
             recyclerView.scrollToPosition(
@@ -60,20 +68,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE_PERMISSION) {
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG, "PERMISSION_GRANTED!");
-                videos = loadVideos();
-            }
-        }
-    }
-
-    private ArrayList<String> loadVideos() {
-        ArrayList<String> videos = new ArrayList<>();
+    private void loadVideos() {
+        videos.clear();
         ContentResolver contentResolver = getBaseContext().getContentResolver();
         String[] projection = new String[] { MediaStore.Video.Media.DISPLAY_NAME };
         Cursor cursor = contentResolver.query(
@@ -86,6 +82,6 @@ public class MainActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             videos.add(cursor.getString(nameColumn));
         }
-        return videos;
+        cursor.close();
     }
 }
