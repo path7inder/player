@@ -1,4 +1,4 @@
-package com.path7inder.player;
+package com.path7inder.player.ui;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -6,6 +6,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+
+import com.path7inder.player.R;
+import com.path7inder.player.adapter.VideoListAdapter;
 
 import java.util.ArrayList;
 
@@ -15,7 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends AppCompatActivity {
+public class VideoListActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_PERMISSION = 0;
 
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        CustomAdapter adapter = new CustomAdapter(videos);
+        VideoListAdapter adapter = new VideoListAdapter(videos);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
