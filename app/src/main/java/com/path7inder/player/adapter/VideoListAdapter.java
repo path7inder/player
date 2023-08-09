@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.path7inder.player.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
