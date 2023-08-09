@@ -1,16 +1,16 @@
 package com.path7inder.player.ui;
 
 import android.Manifest;
-import android.content.ContentResolver;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.MediaStore;
 
 import com.path7inder.player.R;
 import com.path7inder.player.adapter.VideoListAdapter;
+import com.path7inder.player.data.repository.VideoListRepository;
+import com.path7inder.player.data.repository.VideoListRepositoryImpl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +22,7 @@ public class VideoListActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_PERMISSION = 0;
 
-    private final ArrayList<String> videos = new ArrayList<>();
+    private final List<String> videos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,19 +69,8 @@ public class VideoListActivity extends AppCompatActivity {
     }
 
     private void loadVideos() {
+        VideoListRepository videoListRepository = new VideoListRepositoryImpl(getContentResolver());
         videos.clear();
-        ContentResolver contentResolver = getBaseContext().getContentResolver();
-        String[] projection = new String[] { MediaStore.Video.Media.DISPLAY_NAME };
-        Cursor cursor = contentResolver.query(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                projection,
-                null,
-                null,
-                null);
-        int nameColumn = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DISPLAY_NAME);
-        while (cursor.moveToNext()) {
-            videos.add(cursor.getString(nameColumn));
-        }
-        cursor.close();
+        videos.addAll(videoListRepository.getVideoList());
     }
 }
