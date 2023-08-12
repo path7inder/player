@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.path7inder.player.R;
+import com.path7inder.player.model.Video;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.ViewHolder> {
 
-    private final List<String> localDataSet;
+    private final List<Video> localDataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView textView;
@@ -29,7 +30,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
         }
     }
 
-    public VideoListAdapter(List<String> dataSet) {
+    public VideoListAdapter(List<Video> dataSet) {
         localDataSet = dataSet;
     }
 
@@ -43,7 +44,8 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.getTextView().setText(localDataSet.get(position));
+        String displayName = localDataSet.get(position).displayName;
+        viewHolder.getTextView().setText(displayName);
     }
 
     @Override
